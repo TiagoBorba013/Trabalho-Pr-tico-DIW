@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FutballNews</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+
+  <nav class="navbar navbar-dark bg-dark px-3 sticky-top">
+    <a class="navbar-brand text-warning" href="index.html">
+      ⚽ FutballNews
+    </a>
+    <span class="text-white-50 small d-none d-md-block">Tudo sobre futebol e a Copa do Mundo 2026</span>
+  </nav>
+
+  <div class="container py-4">
+
+  
+    <section class="mb-5">
+      <h4 class="fw-bold mb-3 border-start border-4 border-warning ps-3">
+        Camisas em Destaque — Copa do Mundo 2026
+      </h4>
+      <div id="carrosselCamisas" class="carousel slide" data-bs-ride="carousel">
+       
+        <div class="carousel-indicators" id="carrossel-indicadores"></div>
+   
+        <div class="carousel-inner" id="carrossel-inner"></div>
+      
+        <button class="carousel-control-prev" type="button" data-bs-target="#carrosselCamisas" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carrosselCamisas" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+
+    <section class="mb-5">
+      <h4 class="fw-bold mb-3 border-start border-4 border-success ps-3">
+        Últimas Notícias
+      </h4>
+      <div class="row g-4" id="cards-noticias"></div>
+    </section>
+
+   
+    <section id="secao-aluno" class="rounded p-4 mb-4">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 class="fw-bold text-success">Sobre o Site</h5>
+          <p class="text-muted">
+            O <strong>FutballNews</strong> é um portal dedicado ao futebol mundial, com foco especial nas camisas das seleções para a Copa do Mundo 2026 e nas principais notícias do esporte mais amado do planeta. O site foi desenvolvido como trabalho prático da disciplina de Desenvolvimento Web.
+          </p>
+        </div>
+        <div class="col-md-6">
+          <h5 class="fw-bold text-success">Autoria</h5>
+          <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-person-circle fs-2 text-secondary"></i>
+            <div>
+              <div><strong>Aluno:</strong> Tiago Sousa de Borba</div>
+              <div><strong>Curso:</strong> Sistemas de Informação</div>
+              <div><strong>Turma:</strong> Manhã</div>
+            </div>
+          </div>
+          <div class="mt-2">
+            <span class="text-success fw-bold me-2">Redes Sociais:</span>
+            <a href="#" class="text-decoration-none me-2"><i class="bi bi-instagram text-danger fs-5"></i></a>
+            <a href="#" class="text-decoration-none me-2"><i class="bi bi-twitter-x text-dark fs-5"></i></a>
+            <a href="#" class="text-decoration-none"><i class="bi bi-github text-dark fs-5"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+
+  <footer class="text-white text-center py-3">
+    <small>© 2026 FutballNews — Todos os direitos reservados</small>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

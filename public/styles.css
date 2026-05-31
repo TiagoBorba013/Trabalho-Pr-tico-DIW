@@ -1,0 +1,46 @@
+
+
+:root {
+  --verde: #1a7a3c;
+  --verde-escuro: #0f4d26;
+  --amarelo: #f5c800;
+}
+
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+
+#carrosselCamisas {
+  background: linear-gradient(135deg, var(--verde-escuro) 0%, #1a3a2a 100%);
+  border-radius: 12px;
+  min-height: 420px;
+}
+
+
+.card {
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.15) !important;
+}
+
+
+#secao-aluno {
+  background-color: #f8f9fa;
+  border-top: 4px solid var(--verde);
+}
+
+
+footer {
+  background-color: var(--verde-escuro);
+}
+
+
+.info-badge {
+  background-color: #f1f3f5;
+}
