@@ -627,6 +627,53 @@ function limparFormulario() {
   document.getElementById('crud-data').value = '';
 }
 
+function pesquisar() {
+  const texto = document.getElementById('input-pesquisa').value.toLowerCase().trim();
+  const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  const filtradas = texto === ''
+    ? noticias
+    : noticias.filter(n =>
+        n.titulo.toLowerCase().includes(texto) ||
+        n.descricao.toLowerCase().includes(texto)
+      );
+
+  const container = document.getElementById('cards-noticias');
+  container.innerHTML = '';
+
+  const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+  const favoritos = JSON.parse(localStorage.getItem(`favoritos_${usuario?.id}`)) || [];
+
+  if (filtradas.length === 0) {
+    container.innerHTML = `<p class="text-muted">Nenhuma notícia encontrada.</p>`;
+    return;
+  }
+
+  filtradas.forEach(noticia => {
+    const isFavorito = favoritos.includes(noticia.id);
+    const col = document.createElement('div');
+    col.className = 'col-sm-6 col-lg-4';
+    col.innerHTML = `
+      <div class="card h-100 shadow-sm border-0">
+        <img src="${noticia.imagem}" class="card-img-top" alt="${noticia.titulo}" style="height:200px; object-fit:cover;">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge bg-success">${noticia.categoria}</span>
+            ${usuario ? `<button onclick="toggleFavorito(${noticia.id})" class="btn btn-sm btn-link p-0 text-danger" id="fav-${noticia.id}">
+              <i class="bi ${isFavorito ? 'bi-heart-fill' : 'bi-heart'} fs-5"></i>
+            </button>` : ''}
+          </div>
+          <h5 class="card-title fw-bold">${noticia.titulo}</h5>
+          <p class="card-text text-muted small flex-grow-1">${noticia.descricao}</p>
+          <p class="text-muted small mb-2"><i class="bi bi-calendar3"></i> ${formatarData(noticia.data)}</p>
+          <a href="detalhe.html?tipo=noticia&id=${noticia.id}" class="btn btn-success btn-sm mt-auto">Ver Mais</a>
+        </div>
+      </div>
+    `;
+    container.appendChild(col);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   inicializarDados();
   renderMenu();
@@ -634,5 +681,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCards();
   renderDetalhe();
   renderFavoritos();
-    renderCrud(); 
+   renderCrud(); 
 });
