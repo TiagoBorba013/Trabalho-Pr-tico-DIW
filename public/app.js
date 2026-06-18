@@ -308,10 +308,123 @@ function inicializarDados() {
   if (!localStorage.getItem('noticias')) {
     localStorage.setItem('noticias', JSON.stringify(dados.noticias));
   }
+  if (!localStorage.getItem('usuarios')) {
+    const usuariosPadrao = [
+      {
+        id: "1",
+        login: "admin",
+        senha: "123",
+        nome: "Administrador",
+        email: "admin@futballnews.com",
+        admin: true
+      },
+      {
+        id: "2",
+        login: "user",
+        senha: "123",
+        nome: "Usuário Comum",
+        email: "user@futballnews.com",
+        admin: false
+      }
+    ];
+    localStorage.setItem('usuarios', JSON.stringify(usuariosPadrao));
+  }
+}
+
+function fazerLogin() {
+  const login = document.getElementById('input-login').value.trim();
+  const senha = document.getElementById('input-senha').value.trim();
+  const msgErro = document.getElementById('msg-erro');
+
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+  const usuario = usuarios.find(u => u.login === login && u.senha === senha);
+
+  if (usuario) {
+    sessionStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+    window.location.href = 'index.html';
+  } else {
+    msgErro.textContent = 'Login ou senha incorretos.';
+    msgErro.classList.remove('d-none');
+  }
+}
+
+function cadastrarUsuario() {
+  const nome = document.getElementById('input-nome').value.trim();
+  const login = document.getElementById('input-login').value.trim();
+  const email = document.getElementById('input-email').value.trim();
+  const senha = document.getElementById('input-senha').value.trim();
+  const msgErro = document.getElementById('msg-erro');
+  const msgSucesso = document.getElementById('msg-sucesso');
+
+  msgErro.classList.add('d-none');
+  msgSucesso.classList.add('d-none');
+
+  if (!nome || !login || !email || !senha) {
+    msgErro.textContent = 'Preencha todos os campos.';
+    msgErro.classList.remove('d-none');
+    return;
+  }
+
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+  if (usuarios.find(u => u.login === login)) {
+    msgErro.textContent = 'Esse login já está em uso.';
+    msgErro.classList.remove('d-none');
+    return;
+  }
+
+  const novoUsuario = {
+    id: Date.now().toString(),
+    login,
+    senha,
+    nome,
+    email,
+    admin: false
+  };
+
+  usuarios.push(novoUsuario);
+  localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+  msgSucesso.textContent = 'Cadastro realizado! Redirecionando...';
+  msgSucesso.classList.remove('d-none');
+
+  setTimeout(() => {
+    window.location.href = 'login.html';
+  }, 1500);
+}
+
+function renderMenu() {
+  const menuNav = document.getElementById('menu-nav');
+  if (!menuNav) return;
+
+  const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+
+  if (!usuario) {
+    menuNav.innerHTML = `
+      <a href="login.html" class="btn btn-sm btn-outline-warning">Login</a>
+    `;
+  } else {
+    let botoes = '';
+
+    if (usuario.admin) {
+      botoes += `<a href="cadastro-itens.html" class="btn btn-sm btn-outline-light">Cadastro</a>`;
+    }
+
+    botoes += `<a href="favoritos.html" class="btn btn-sm btn-outline-light">Favoritos</a>`;
+    botoes += `<button onclick="fazerLogout()" class="btn btn-sm btn-outline-danger">Logout</button>`;
+
+    menuNav.innerHTML = botoes;
+  }
+}
+
+function fazerLogout() {
+  sessionStorage.removeItem('usuarioLogado');
+  window.location.href = 'index.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   inicializarDados();
+  renderMenu();
   renderCarrossel();
   renderCards();
   renderDetalhe();
