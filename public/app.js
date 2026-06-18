@@ -143,16 +143,24 @@ function renderCards() {
   const container = document.getElementById('cards-noticias');
   if (!container) return;
 
+  const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+  const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+  const favoritos = JSON.parse(localStorage.getItem(`favoritos_${usuario?.id}`)) || [];
 
- const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
- noticias.forEach(noticia => {
+  noticias.forEach(noticia => {
+    const isFavorito = favoritos.includes(noticia.id);
     const col = document.createElement('div');
     col.className = 'col-sm-6 col-lg-4';
     col.innerHTML = `
       <div class="card h-100 shadow-sm border-0">
         <img src="${noticia.imagem}" class="card-img-top" alt="${noticia.titulo}" style="height:200px; object-fit:cover;">
         <div class="card-body d-flex flex-column">
-          <span class="badge bg-success mb-2 align-self-start">${noticia.categoria}</span>
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge bg-success">${noticia.categoria}</span>
+            ${usuario ? `<button onclick="toggleFavorito(${noticia.id})" class="btn btn-sm btn-link p-0 text-danger" id="fav-${noticia.id}">
+              <i class="bi ${isFavorito ? 'bi-heart-fill' : 'bi-heart'} fs-5"></i>
+            </button>` : ''}
+          </div>
           <h5 class="card-title fw-bold">${noticia.titulo}</h5>
           <p class="card-text text-muted small flex-grow-1">${noticia.descricao}</p>
           <p class="text-muted small mb-2"><i class="bi bi-calendar3"></i> ${formatarData(noticia.data)}</p>
@@ -422,10 +430,92 @@ function fazerLogout() {
   window.location.href = 'index.html';
 }
 
+function toggleFavorito(noticiaId) {
+  const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+  if (!usuario) return;
+
+  const chave = `favoritos_${usuario.id}`;
+  const favoritos = JSON.parse(localStorage.getItem(chave)) || [];
+
+  const index = favoritos.indexOf(noticiaId);
+  if (index === -1) {
+    favoritos.push(noticiaId);
+  } else {
+
+    favoritos.splice(index, 1);
+  }
+
+  localStorage.setItem(chave, JSON.stringify(favoritos));
+
+  const btn = document.getElementById(`fav-${noticiaId}`);
+  if (btn) {
+    const icon = btn.querySelector('i');
+    const ehFavorito = favoritos.includes(noticiaId);
+    icon.className = `bi ${ehFavorito ? 'bi-heart-fill' : 'bi-heart'} fs-5`;
+  }
+}
+
+function renderFavoritos() {
+  const container = document.getElementById('cards-favoritos');
+  if (!container) return;
+
+  const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+
+  // se não tiver logado, manda pro login
+  if (!usuario) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const chave = `favoritos_${usuario.id}`;
+  const favoritosIds = JSON.parse(localStorage.getItem(chave)) || [];
+  const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  const noticiasFavoritas = noticias.filter(n => favoritosIds.includes(n.id));
+
+  if (noticiasFavoritas.length === 0) {
+    container.innerHTML = `<p class="text-muted">Você ainda não possui itens favoritos cadastrados.</p>`;
+    return;
+  }
+
+  noticiasFavoritas.forEach(noticia => {
+    const col = document.createElement('div');
+    col.className = 'col-sm-6 col-lg-4';
+    col.innerHTML = `
+      <div class="card h-100 shadow-sm border-0">
+        <img src="${noticia.imagem}" class="card-img-top" alt="${noticia.titulo}" style="height:200px; object-fit:cover;">
+        <div class="card-body d-flex flex-column">
+          <span class="badge bg-success mb-2 align-self-start">${noticia.categoria}</span>
+          <h5 class="card-title fw-bold">${noticia.titulo}</h5>
+          <p class="card-text text-muted small flex-grow-1">${noticia.descricao}</p>
+          <div class="d-flex gap-2 mt-auto">
+            <a href="detalhe.html?tipo=noticia&id=${noticia.id}" class="btn btn-success btn-sm flex-grow-1">Ver Mais</a>
+            <button onclick="removerFavorito(${noticia.id})" class="btn btn-outline-danger btn-sm">
+              <i class="bi bi-heart-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(col);
+  });
+}
+
+function removerFavorito(noticiaId) {
+  const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+  const chave = `favoritos_${usuario.id}`;
+  const favoritos = JSON.parse(localStorage.getItem(chave)) || [];
+  const novos = favoritos.filter(id => id !== noticiaId);
+  localStorage.setItem(chave, JSON.stringify(novos));
+  document.getElementById('cards-favoritos').innerHTML = '';
+  renderFavoritos();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   inicializarDados();
   renderMenu();
   renderCarrossel();
   renderCards();
   renderDetalhe();
+  renderFavoritos();
 });
