@@ -511,6 +511,122 @@ function removerFavorito(noticiaId) {
   renderFavoritos();
 }
 
+function renderCrud() {
+  const tabela = document.getElementById('tabela-noticias');
+  if (!tabela) return;
+
+  const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+  if (!usuario || !usuario.admin) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  tabela.innerHTML = '';
+  const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  noticias.forEach(noticia => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${noticia.id}</td>
+      <td>${noticia.titulo}</td>
+      <td>${noticia.categoria}</td>
+      <td>${formatarData(noticia.data)}</td>
+      <td>
+        <button onclick="editarNoticia(${noticia.id})" class="btn btn-sm btn-warning me-1">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+        <button onclick="excluirNoticia(${noticia.id})" class="btn btn-sm btn-danger">
+          <i class="bi bi-trash"></i> Excluir
+        </button>
+      </td>
+    `;
+    tabela.appendChild(tr);
+  });
+}
+
+function salvarNoticia() {
+  const id = document.getElementById('crud-id').value;
+  const titulo = document.getElementById('crud-titulo').value.trim();
+  const categoria = document.getElementById('crud-categoria').value.trim();
+  const descricao = document.getElementById('crud-descricao').value.trim();
+  const conteudo = document.getElementById('crud-conteudo').value.trim();
+  const imagem = document.getElementById('crud-imagem').value.trim();
+  const data = document.getElementById('crud-data').value;
+  const msg = document.getElementById('msg-crud');
+
+  if (!titulo || !categoria || !descricao || !conteudo || !data) {
+    msg.className = 'alert alert-danger';
+    msg.textContent = 'Preencha todos os campos obrigatórios.';
+    msg.classList.remove('d-none');
+    return;
+  }
+
+  const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  if (id) {
+    const index = noticias.findIndex(n => n.id === parseInt(id));
+    if (index !== -1) {
+      noticias[index] = { ...noticias[index], titulo, categoria, descricao, conteudo, imagem, data };
+    }
+    msg.textContent = 'Notícia atualizada com sucesso!';
+  } else {
+    
+    const novaNoticia = {
+      id: Date.now(),
+      titulo,
+      categoria,
+      descricao,
+      conteudo,
+      imagem,
+      data
+    };
+    noticias.push(novaNoticia);
+    msg.textContent = 'Notícia cadastrada com sucesso!';
+  }
+
+  localStorage.setItem('noticias', JSON.stringify(noticias));
+  msg.className = 'alert alert-success';
+  msg.classList.remove('d-none');
+
+  limparFormulario();
+  renderCrud();
+}
+
+function editarNoticia(noticiaId) {
+  const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+  const noticia = noticias.find(n => n.id === noticiaId);
+  if (!noticia) return;
+
+  document.getElementById('crud-id').value = noticia.id;
+  document.getElementById('crud-titulo').value = noticia.titulo;
+  document.getElementById('crud-categoria').value = noticia.categoria;
+  document.getElementById('crud-descricao').value = noticia.descricao;
+  document.getElementById('crud-conteudo').value = noticia.conteudo;
+  document.getElementById('crud-imagem').value = noticia.imagem;
+  document.getElementById('crud-data').value = noticia.data;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function excluirNoticia(noticiaId) {
+  if (!confirm('Tem certeza que deseja excluir esta notícia?')) return;
+
+  const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+  const novas = noticias.filter(n => n.id !== noticiaId);
+  localStorage.setItem('noticias', JSON.stringify(novas));
+  renderCrud();
+}
+
+function limparFormulario() {
+  document.getElementById('crud-id').value = '';
+  document.getElementById('crud-titulo').value = '';
+  document.getElementById('crud-categoria').value = '';
+  document.getElementById('crud-descricao').value = '';
+  document.getElementById('crud-conteudo').value = '';
+  document.getElementById('crud-imagem').value = '';
+  document.getElementById('crud-data').value = '';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   inicializarDados();
   renderMenu();
@@ -518,4 +634,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCards();
   renderDetalhe();
   renderFavoritos();
+    renderCrud(); 
 });
