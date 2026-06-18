@@ -104,8 +104,9 @@ function renderCarrossel() {
   const indicadores = document.getElementById('carrossel-indicadores');
   if (!carrosselInner) return;
 
-  const destaques = dados.selecoes.filter(s => s.destaque);
-
+ const selecoes = JSON.parse(localStorage.getItem('selecoes')) || [];
+ const destaques = selecoes.filter(s => s.destaque);
+ 
   destaques.forEach((selecao, index) => {
    
     const slide = document.createElement('div');
@@ -142,7 +143,9 @@ function renderCards() {
   const container = document.getElementById('cards-noticias');
   if (!container) return;
 
-  dados.noticias.forEach(noticia => {
+
+ const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+ noticias.forEach(noticia => {
     const col = document.createElement('div');
     col.className = 'col-sm-6 col-lg-4';
     col.innerHTML = `
@@ -168,7 +171,8 @@ function renderDetalhe() {
   const id = parseInt(params.get('id'));
 
   if (tipo === 'selecao') {
-    const selecao = dados.selecoes.find(s => s.id === id);
+    const selecoes = JSON.parse(localStorage.getItem('selecoes')) || [];
+    const selecao = selecoes.find(s => s.id === id);
     if (!selecao) return;
 
     document.title = `${selecao.nome} - FutballNews`;
@@ -229,7 +233,8 @@ function renderDetalhe() {
     }
 
   } else if (tipo === 'noticia') {
-    const noticia = dados.noticias.find(n => n.id === id);
+    const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+    const noticia = noticias.find(n => n.id === id);
     if (!noticia) return;
 
     document.title = `${noticia.titulo} - FutballNews`;
@@ -296,8 +301,17 @@ function formatarData(dataStr) {
   return `${dia} ${meses[parseInt(mes)-1]} ${ano}`;
 }
 
+function inicializarDados() {
+  if (!localStorage.getItem('selecoes')) {
+    localStorage.setItem('selecoes', JSON.stringify(dados.selecoes));
+  }
+  if (!localStorage.getItem('noticias')) {
+    localStorage.setItem('noticias', JSON.stringify(dados.noticias));
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+  inicializarDados();
   renderCarrossel();
   renderCards();
   renderDetalhe();
