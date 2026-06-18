@@ -461,7 +461,6 @@ function renderFavoritos() {
 
   const usuario = JSON.parse(sessionStorage.getItem('usuarioLogado'));
 
-  // se não tiver logado, manda pro login
   if (!usuario) {
     window.location.href = 'login.html';
     return;
@@ -681,5 +680,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCards();
   renderDetalhe();
   renderFavoritos();
-   renderCrud(); 
+  renderCrud(); 
 });
